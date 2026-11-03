@@ -106,7 +106,7 @@ fun ColumnExample(modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally
     ){
         Text("行動應用軟體開發：基本元件")
-        Text("作者：楊子青")
+        Text("作者：余宇翔")
         Text( msg )
 
         Spacer(modifier = Modifier.height(30.dp))
