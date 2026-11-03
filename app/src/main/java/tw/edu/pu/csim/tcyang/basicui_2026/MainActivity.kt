@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,12 +24,16 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,10 +43,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import tw.edu.pu.csim.tcyang.basicui_2026.ui.theme.BasicUI_2026Theme
+
 
 
 
@@ -56,6 +63,11 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
+                Toast.makeText(
+                    this,
+                    "作者:余宇翔",
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
     }
@@ -172,6 +184,8 @@ data class Animal(
 
 @Composable
 fun LazyRowExample(modifier: Modifier = Modifier) {
+    val context = LocalContext.current
+
     val animals = listOf(
         Animal("鴨子", R.drawable.animal0),
         Animal("企鵝", R.drawable.animal1),
@@ -190,22 +204,44 @@ fun LazyRowExample(modifier: Modifier = Modifier) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         // 直接傳入 animals 清單，每個迴圈拿到一個 animal 物件
-        items(animals) { animal ->
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxSize()
-            ) {
-                Image(
-                    painter = painterResource(id = animal.imageRes),
-                    contentDescription = animal.name,
-                    modifier = Modifier.size(150.dp)
+        itemsIndexed(animals) { index, animal ->
+
+            Card(
+                modifier = Modifier.fillParentMaxWidth(0.5f)
+                    .height(260.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFFD0BCFF)
                 )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "${animal.name}"
-                )
+            ){
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    Image(
+                        painter = painterResource(id = animal.imageRes),
+                        contentDescription = animal.name,
+                        modifier = Modifier.size(150.dp)
+                            .clickable{
+                                Toast.makeText(
+                                    context,
+                                    "您點選的是 ${animal.name}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "$index ${animal.name}"
+                    )
+                }
             }
+
+
+
+
+
         }
     }
 }
