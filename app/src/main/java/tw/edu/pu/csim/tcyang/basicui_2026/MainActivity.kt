@@ -1,10 +1,12 @@
 package tw.edu.pu.csim.tcyang.basicui_2026
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.DrawableRes
+import androidx.annotation.RawRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -33,7 +35,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import android.widget.Toast
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,8 +49,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.media3.common.MediaItem
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.PlayerView
 import tw.edu.pu.csim.tcyang.basicui_2026.ui.theme.BasicUI_2026Theme
-
 
 
 
@@ -79,9 +84,14 @@ fun Main( modifier: Modifier = Modifier) {
         LazyColumnExample(modifier)
         ColumnExample(modifier)
         TextFieldExample(modifier)
-        LazyRowExample(modifier)
+        Column{
+            SimpleVideoPlayer(R.raw.love)
+            LazyRowExample(modifier)
+        }
+
     }
 }
+
 
 @Composable
 fun LazyColumnExample( modifier: Modifier = Modifier) {
@@ -245,3 +255,45 @@ fun LazyRowExample(modifier: Modifier = Modifier) {
         }
     }
 }
+
+@Composable
+fun SimpleVideoPlayer(
+    @RawRes videoRes: Int
+) {
+    val context = LocalContext.current
+
+    // 建立並記住 ExoPlayer 實體，設定影片路徑與自動播放
+    val exoPlayer = remember {
+        ExoPlayer.Builder(context).build().apply {
+            val uri = "android.resource://${context.packageName}/$videoRes"
+            setMediaItem(MediaItem.fromUri(uri))
+            prepare()
+            playWhenReady = true // 載入完成自動播放
+        }
+    }
+
+
+    // 利用 DisposableEffect 管理生命週期
+    // 離開畫面時自動釋放記憶體
+    DisposableEffect(Unit) {
+        onDispose {
+            exoPlayer.release() // 💡 釋放播放器資源
+        }
+    }
+
+
+
+
+    //將原生的 PlayerView 嵌入 Compose
+    AndroidView(
+        factory = { ctx ->
+            PlayerView(ctx).apply {
+                player = exoPlayer
+            }
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(200.dp)
+    )
+}
+
