@@ -28,6 +28,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.OutlinedTextField
@@ -56,6 +57,7 @@ import androidx.media3.ui.PlayerView
 import tw.edu.pu.csim.tcyang.basicui_2026.ui.theme.BasicUI_2026Theme
 
 
+var currentVideoRes: Int = 0
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -295,5 +297,22 @@ fun SimpleVideoPlayer(
             .fillMaxWidth()
             .height(200.dp)
     )
+// 3. 加入切換影片的按鈕
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(8.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        Button(onClick = {
+            // 如果目前是 handpan 就切換到 love，反之亦然
+            currentVideoRes = if (currentVideoRes == R.raw.love) {
+                R.raw.handpan
+            } else {
+                R.raw.love
+            }
+        }) {
+            // 根據當前影片動態顯示按鈕文字
+            Text(if (currentVideoRes == R.raw.love) "切換至 Handpan" else "切換至 Love")
+        }
+    }
 }
 
